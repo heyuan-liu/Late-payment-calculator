@@ -11,9 +11,9 @@ def get_payment(pv, rate, period):
     # 贷款月利率r
     r = rate/12
     if r == 0:
-        return pv / period, 0
-    
-    payment = (pv * r) / (1 - (1 / (1 + r))**period)
+        payment = pv / period
+    else:
+        payment = (pv * r) / (1 - (1 / (1 + r))**period)
     interest = payment * period - pv
     
     return payment, interest
@@ -26,9 +26,9 @@ def get_period(pv, rate, payment):
     # 贷款月利率r
     r = rate/12
     if r == 0:
-        return np.ceil(pv / payment), 0
-    
-    period = - np.log(1 - pv * r / payment) / np.log(1 + r)
+        period = pv / payment
+    else:
+        period = - np.log(1 - pv * r / payment) / np.log(1 + r)
     interest = payment * period - pv
     
     return np.ceil(period), interest
@@ -38,28 +38,28 @@ def get_period(pv, rate, payment):
 
 # ---------------------------------------------------
 # 输入贷款总额pv、贷款年化利率rate、购房基金初始资金init_fund、投资收益率ret、还款期限period
-# 输出每月基金支出payment_fund_actual、每月额外支出payment_add、缴纳利息总额interest
+# 输出每月还款额payment、每月基金支出payment_fund_actual、每月额外支出payment_add、缴纳利息总额interest
 # ---------------------------------------------------
 def get_payment_w_invest(pv, rate, init_fund, ret, period):
     # 贷款月利率r
     r = rate/12
     if r == 0:
-        return pv / period, 0
-    
-    payment = (pv * r) / (1 - (1 / (1 + r))**period) # total payment
+        payment = pv / period
+    else:
+        payment = (pv * r) / (1 - (1 / (1 + r))**period) # total payment
     interest = payment * period - pv
     
     # 投资月收益率g
     g = (1 + ret)**(20/260) - 1
     if g == 0:
-        return payment, interest
-    
-    # 从购房基金中每月最大支出金额payment_fund
-    payment_fund = init_fund * g / (1 - (1 / (1 + g))**period)
+        # 从购房基金中每月最大支出金额payment_fund
+        payment_fund = init_fund / period
+    else:
+        payment_fund = init_fund * g / (1 - (1 / (1 + g))**period)
     payment_fund_actual = min(payment, payment_fund)
     payment_add = max(0, payment - payment_fund)
     
-    return payment_fund_actual, payment_add, interest
+    return payment, payment_fund_actual, payment_add, interest
 
 # ---------------------------------------------------
 # 输入贷款总额pv、贷款年化利率rate、购房基金初始资金init_fund、投资收益率ret、每月还款额payment
@@ -70,22 +70,22 @@ def get_period_w_invest(pv, rate, init_fund, ret, payment):
     # 贷款月利率r
     r = rate/12
     if r == 0:
-        return pv / period, 0
-    
-    period = - np.log(1 - pv * r / payment) / np.log(1 + r)
+        period = pv / payment
+    else:
+        period = - np.log(1 - pv * r / payment) / np.log(1 + r)
     interest = payment * period - pv
     
     # 投资月收益率g
     g = (1 + ret)**(20/260) - 1
     if g == 0:
-        return period, interest
-    
-    # 从购房基金中每月最大支出金额payment_fund
-    payment_fund = init_fund * g / (1 - (1 / (1 + g))**period)
+        # 从购房基金中每月最大支出金额payment_fund
+        payment_fund = init_fund / period
+    else:
+        payment_fund = init_fund * g / (1 - (1 / (1 + g))**period)
     payment_fund_actual = min(payment, payment_fund)
     payment_add = max(0, payment - payment_fund)
     
-    return payment_fund_actual, payment_add, interest
+    return period, payment_fund_actual, payment_add, interest
 
 # ---------------------------------------------------
 # 也可以先用无投资计划的方法计算出每月还款额payment、还款期限period
@@ -95,10 +95,10 @@ def get_period_w_invest(pv, rate, init_fund, ret, payment):
 def separate_payment(init_fund, ret, payment, period):
     g = (1 + ret)**(20/260) - 1
     if g == 0:
-        return period, interest
-    
-    # 从购房基金中每月最大支出金额payment_fund
-    payment_fund = init_fund * g / (1 - (1 / (1 + g))**period)
+        # 从购房基金中每月最大支出金额payment_fund
+        payment_fund = init_fund / period
+    else:
+        payment_fund = init_fund * g / (1 - (1 / (1 + g))**period)
     payment_fund_actual = min(payment, payment_fund)
     payment_add = max(0, payment - payment_fund)
     
