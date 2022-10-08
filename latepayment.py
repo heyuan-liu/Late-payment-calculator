@@ -4,12 +4,12 @@ import numpy as np
 ## 无投资计划
 
 # ---------------------------------------------------
-# 输入贷款总额pv、贷款利率rate、还款期限period
+# 输入贷款总额pv、贷款年化利率rate、还款期限period
 # 输出每月还款额payment、缴纳利息总额interest
 # ---------------------------------------------------
 def get_payment(pv, rate, period):
     # 贷款月利率r
-    r = ((1 + rate/12)**12 - 1)/12
+    r = rate/12
     if r == 0:
         return pv / period, 0
     
@@ -19,12 +19,12 @@ def get_payment(pv, rate, period):
     return payment, interest
 
 # ---------------------------------------------------
-# 输入贷款总额pv、贷款利率rate、每月还款额payment
+# 输入贷款总额pv、贷款年化利率rate、每月还款额payment
 # 输出还款期限period、缴纳利息总额interest
 # ---------------------------------------------------
 def get_period(pv, rate, payment):
     # 贷款月利率r
-    r = ((1 + rate/12)**12 - 1)/12
+    r = rate/12
     if r == 0:
         return np.ceil(pv / payment), 0
     
@@ -37,12 +37,12 @@ def get_period(pv, rate, payment):
 ## 有投资计划
 
 # ---------------------------------------------------
-# 输入贷款总额pv、贷款利率rate、购房基金初始资金init_fund、投资收益率ret、还款期限period
+# 输入贷款总额pv、贷款年化利率rate、购房基金初始资金init_fund、投资收益率ret、还款期限period
 # 输出每月基金支出payment_fund_actual、每月额外支出payment_add、缴纳利息总额interest
 # ---------------------------------------------------
 def get_payment_w_invest(pv, rate, init_fund, ret, period):
     # 贷款月利率r
-    r = ((1 + rate/12)**12 - 1)/12
+    r = rate/12
     if r == 0:
         return pv / period, 0
     
@@ -62,13 +62,13 @@ def get_payment_w_invest(pv, rate, init_fund, ret, period):
     return payment_fund_actual, payment_add, interest
 
 # ---------------------------------------------------
-# 输入贷款总额pv、贷款利率rate、购房基金初始资金init_fund、投资收益率ret、每月还款额payment
+# 输入贷款总额pv、贷款年化利率rate、购房基金初始资金init_fund、投资收益率ret、每月还款额payment
 # 输出还款期限period、每月基金支出payment_fund_actual，每月额外支出payment_add、缴纳利息总额interest
 # 注：必须输入还款额总额，因为只输入payment_fund_actual或payment_add无法确定还款期限
 # ---------------------------------------------------
 def get_period_w_invest(pv, rate, init_fund, ret, payment):
     # 贷款月利率r
-    r = ((1 + rate/12)**12 - 1)/12
+    r = rate/12
     if r == 0:
         return pv / period, 0
     
@@ -103,4 +103,3 @@ def separate_payment(init_fund, ret, payment, period):
     payment_add = max(0, payment - payment_fund)
     
     return payment_fund_actual, payment_add
-
